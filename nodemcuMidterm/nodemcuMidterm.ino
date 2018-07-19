@@ -5,13 +5,24 @@
 
 SoftwareSerial se_read(D5, D6); // write only
 SoftwareSerial se_write(D0, D1); // read only
+String const url = "http://158.108.165.158/api/";
 
 struct ProjectData {
-  // your data
+  int32_t is_button_pressed;
+  float temp;
+  int32_t light_lux;
+  float sound;
+  int32_t door;
+  int32_t plus;
 } cur_project_data;
 
 struct ServerData {
-  //your data
+  int32_t is_button_pressed;
+  float temp;
+  int32_t light_lux;
+  float sound;
+  int32_t door;
+  int32_t plus;
 } server_data;
 
 const char GET_SERVER_DATA = 1;
@@ -19,8 +30,8 @@ const char GET_SERVER_DATA_RESULT = 2;
 const char UPDATE_PROJECT_DATA = 3;
 
 // wifi configuration
-const char SSID[] = "don";
-const char PASSWORD[] = "dondondon";
+const char SSID[] = "KUWIN_KING_2.4GHz";
+const char PASSWORD[] = "1234567890";
 
 // for nodemcu communication
 uint32_t last_sent_time = 0;
@@ -67,10 +78,18 @@ void serial_initialization() {
 }
 
 String set_builder(const char *key, int32_t value) {
-  String str = "http://ku-exceed-backend.appspot.com/api/";
+  String str = url;
   str = str + key;
-  str = str + "/set/?value=";
+  str = str + "/set?value=";
   str = str + value;
+  Serial.println(str);
+  return str;
+}
+
+String get_builder(const char *key) {
+  String str = url;
+  str = str + key;
+  str = str + "/view/";
   return str;
 }
 
@@ -109,13 +128,13 @@ bool POST(const char *url, void (*callback)(String const &str)) {
   HTTPClient main_client;
   main_client.begin(url);
   if (main_client.GET() == HTTP_CODE_OK) {
-    Serial.println("GET REQUEST RESPONSE BEGIN");
+    Serial.println("POST REQUEST RESPONSE BEGIN");
     if (callback != 0) {
       callback(main_client.getString());
     }
     return true;
   }
-  Serial.println("GET REQUEST RESPONSE BEGIN");
+  Serial.println("POST REQUEST RESPONSE BEGIN");
   return false;
 }
 
@@ -157,8 +176,19 @@ void loop() {
   */
 
   uint32_t cur_time = millis();
-  if (cur_time - last_sent_time > 500) {
-    //always update
+  if (cur_time - last_sent_time > 1000) {
+    //int variable
+    //GET("http://ku-exceed-backend.appspot.com/api/exceed-door/view/", get_request,server_data.door);
+    //Serial.print("door : ");
+    //Serial.println(server_data.door);
+    //float variable
+    //GET("http://ku-exceed-backend.appspot.com/api/exceed-temperature/view/", get_request,server_data.temp); 
+    //Serial.print("temp : ");
+    //Serial.println(server_data.temp);
+    GET(get_builder("exceed-plus").c_str(), get_request,server_data.plus); 
+    Serial.print("plus : ");
+    Serial.println(server_data.plus);
+    //GET("http://ku-exceed-backend.appspot.com/api/exceed_value/set/?value=test", 0);
     last_sent_time = cur_time;
   }
 
@@ -184,11 +214,23 @@ void loop() {
         switch (cur_data_header) {
           case UPDATE_PROJECT_DATA: {
               ProjectData *project_data = (ProjectData*)buffer;
-              //depend on what your data is int32_t var = project_data->var;
-              //POST(...)
+              float temp = project_data->temp;
+              int32_t light_lux = project_data->light_lux;
+              int32_t is_button_pressed = project_data->is_button_pressed;
+              float sound = project_data->sound;
+              int32_t door = project_data->door;
+              int32_t plus = project_data->plus;
+              Serial.println(plus);
+              POST(set_builder("exceed-temp", temp).c_str(), update_data_to_server_callback);
+              POST(set_builder("exceed-light_lux", light_lux).c_str(), update_data_to_server_callback);
+              POST(set_builder("exceed-is_button_pressed", is_button_pressed).c_str(), update_data_to_server_callback);
+              POST(set_builder("exceed-sound", sound).c_str(), update_data_to_server_callback);
+              POST(set_builder("exceed-door", door).c_str(), update_data_to_server_callback);
+              POST(set_builder("exceed-plus", plus).c_str(), update_data_to_server_callback);
             }
             break;
           case GET_SERVER_DATA:
+            Serial.println("Send data to arduino");
             send_to_arduino(GET_SERVER_DATA_RESULT, &server_data, sizeof(ServerData));
             break;
         }
