@@ -7,11 +7,11 @@ SoftwareSerial se_read(D5, D6); // write only
 SoftwareSerial se_write(D0, D1); // read only
 
 struct ProjectData {
-  
+  // your data
 } cur_project_data;
 
 struct ServerData {
-  
+  //your data
 } server_data;
 
 const char GET_SERVER_DATA = 1;
@@ -184,7 +184,8 @@ void loop() {
         switch (cur_data_header) {
           case UPDATE_PROJECT_DATA: {
               ProjectData *project_data = (ProjectData*)buffer;
-              
+              //depend on what your data is int32_t var = project_data->var;
+              //POST(...)
             }
             break;
           case GET_SERVER_DATA:
