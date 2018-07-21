@@ -5,7 +5,10 @@
 //Digital
 #define MOTORB1 5
 #define MOTORB2 6
-
+/*
+ * VCC -> 5V
+ * GNG -> GND
+ */
 //if you want to control the RPM of motor use PWM(~) PIN.
 void setup() {
   Serial.begin(9600);
