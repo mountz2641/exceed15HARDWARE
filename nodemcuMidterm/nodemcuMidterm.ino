@@ -5,7 +5,8 @@
 
 SoftwareSerial se_read(D5, D6); // write only
 SoftwareSerial se_write(D0, D1); // read only
-String const url = "http://158.108.165.158/api/";
+//String const url = "http://158.108.165.158/api/";
+String const url = "http://exceed.srakrn.me/api/";
 
 struct ProjectData {
   int32_t is_button_pressed;
@@ -30,8 +31,8 @@ const char GET_SERVER_DATA_RESULT = 2;
 const char UPDATE_PROJECT_DATA = 3;
 
 // wifi configuration
-const char SSID[] = "KUWIN_KING_2.4GHz";
-const char PASSWORD[] = "1234567890";
+const char SSID[] = "mountz";
+const char PASSWORD[] = "phu123456";
 
 // for nodemcu communication
 uint32_t last_sent_time = 0;
@@ -174,22 +175,13 @@ void loop() {
   /* 1) Server polling data from server every 1500 ms
      2) Arduino always get local data
   */
-
+  POST(set_builder("exceed-temp", 100).c_str(), update_data_to_server_callback);
   uint32_t cur_time = millis();
   if (cur_time - last_sent_time > 1000) {
-    //int variable
-    //GET("http://ku-exceed-backend.appspot.com/api/exceed-door/view/", get_request,server_data.door);
-    //Serial.print("door : ");
-    //Serial.println(server_data.door);
-    //float variable
-    //GET("http://ku-exceed-backend.appspot.com/api/exceed-temperature/view/", get_request,server_data.temp); 
-    //Serial.print("temp : ");
-    //Serial.println(server_data.temp);
-    GET(get_builder("exceed-plus").c_str(), get_request,server_data.plus); 
-    Serial.print("plus : ");
-    Serial.println(server_data.plus);
-    //GET("http://ku-exceed-backend.appspot.com/api/exceed_value/set/?value=test", 0);
-    last_sent_time = cur_time;
+    //GET(get_builder("exceed1-plus").c_str(), get_request,server_data.plus); 
+    //Serial.print("plus : ");
+    //Serial.println(server_data.plus);
+    //last_sent_time = cur_time;
   }
 
   while (se_read.available()) {
@@ -221,12 +213,12 @@ void loop() {
               int32_t door = project_data->door;
               int32_t plus = project_data->plus;
               Serial.println(plus);
-              POST(set_builder("exceed-temp", temp).c_str(), update_data_to_server_callback);
-              POST(set_builder("exceed-light_lux", light_lux).c_str(), update_data_to_server_callback);
-              POST(set_builder("exceed-is_button_pressed", is_button_pressed).c_str(), update_data_to_server_callback);
-              POST(set_builder("exceed-sound", sound).c_str(), update_data_to_server_callback);
-              POST(set_builder("exceed-door", door).c_str(), update_data_to_server_callback);
-              POST(set_builder("exceed-plus", plus).c_str(), update_data_to_server_callback);
+              POST(set_builder("exceed1-temp", temp).c_str(), update_data_to_server_callback);
+              POST(set_builder("exceed1-light_lux", light_lux).c_str(), update_data_to_server_callback);
+              POST(set_builder("exceed1-is_button_pressed", is_button_pressed).c_str(), update_data_to_server_callback);
+              POST(set_builder("exceed1-sound", sound).c_str(), update_data_to_server_callback);
+              POST(set_builder("exceed1-door", door).c_str(), update_data_to_server_callback);
+              POST(set_builder("exceed1-plus", plus).c_str(), update_data_to_server_callback);
             }
             break;
           case GET_SERVER_DATA:

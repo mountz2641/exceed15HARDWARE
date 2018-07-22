@@ -63,19 +63,7 @@ int32_t b = -1;
 void loop() {
   uint32_t cur_time = millis();
   //send to nodemcu
-  int a = digitalRead(SW);
-  if(a == 0){
-    Serial.println("Press");
-    b*=-1;
-    delay(500);
-  }
-  project_data.plus = b;
-  if(server_data.plus == 1){
-    digitalWrite(LED,HIGH);
-  }
-  else{
-    digitalWrite(LED,LOW);
-  }
+  
   
   if (cur_time - last_sent_time > 500) {//always update
     Serial.println(project_data.plus);
@@ -132,6 +120,19 @@ void loop() {
         cur_buffer_length = -1;
       }
     }
+  }
+  int a = digitalRead(SW);
+  if(a == 0){
+    Serial.println("Press");
+    b*=-1;
+    delay(500);
+  }
+  project_data.plus = b;
+  if(server_data.plus == 1){
+    digitalWrite(LED,HIGH);
+  }
+  else{
+    digitalWrite(LED,LOW);
   }
 }
 
